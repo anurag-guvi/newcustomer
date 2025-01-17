@@ -16,5 +16,5 @@ ENTRYPOINT ["java", "-jar", "/app/app.jar"]
 #keys.json
 COPY customer-crud-app-447113-7758cdd359e7.json /app/keyfile.json
 
-ENV GOOGLE_APPLICATION_CREDENTIALS="/app/keyfile.json"
+git ENV GOOGLE_APPLICATION_CREDENTIALS="/app/keyfile.json"
 
