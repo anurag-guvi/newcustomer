@@ -47,6 +47,12 @@ jobs:
           docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/newcustomer:$GITHUB_SHA .
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/newcustomer:$GITHUB_SHA
 
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+
       # Deploy the image to Google Cloud Run
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v0
