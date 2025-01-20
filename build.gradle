@@ -45,7 +45,7 @@ tasks.named('test') {
 task buildDocker(type: Exec) {
 	dependsOn build
 	doLast {
-		commandLine 'docker', 'build', '-t', 'gcr.io/customer-crud-app-447113/newcustomer:1.3', '.'
+		commandLine 'docker', 'build', '-t', 'gcr.io/customer-crud-app-447113/newcustomer:1.4', '.'
 	}
 }
 //bootJar {
