@@ -14,7 +14,7 @@ EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
 
 #keys.json
-#COPY service_account_key.json /app/keyfile.json
-#
-#ENV GOOGLE_APPLICATION_CREDENTIALS="/app/keyfile.json"
+COPY service_account_key.json /app/keyfile.json
+
+ENV GOOGLE_APPLICATION_CREDENTIALS="/app/keyfile.json"
 
