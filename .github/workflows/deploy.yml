@@ -25,6 +25,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       # Cache Gradle dependencies
       - name: Cache Gradle dependencies
         uses: actions/cache@v3
@@ -34,7 +37,7 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
-      # Build the project using Gradle
+    # Build the project using Gradle
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
 
