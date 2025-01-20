@@ -15,7 +15,7 @@ jobs:
 
     steps:
       # Checkout the repository
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       # Set up JDK 17
@@ -37,16 +37,26 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
+      - name: Authenticate to Google Cloud
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        run: |
+          echo "${{ secrets.GOOGLE_CREDENTIALS }}" > service_account_key.json
+          gcloud auth activate-service-account --key-file=service_account_key.json
+          gcloud auth configure-docker
+
     # Build the project using Gradle
       - name: Build with Gradle
         run: ./gradlew build --no-daemon -x test
 
       # Build and push Docker image to Google Container Registry
-      - name: Build Docker image
+      - name: Build the Docker image
         run: |
-          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > service_account_key.json
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/gitnewcustomer:$GITHUB_SHA .
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/gitnewcustomer:$GITHUB_SHA
+            docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/gitnewcustomer:$GITHUB_SHA .
+
+      - name: Push the Docker image to GCR
+        run: |
+            docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/gitnewcustomer:$GITHUB_SHA
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
@@ -56,10 +66,9 @@ jobs:
 
       # Deploy the image to Google Cloud Run
       - name: Deploy to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v0
-        with:
-          service: gitnewcustomer
-          image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/gitnewcustomer:$GITHUB_SHA
-          region: us-central1
-#        env:
-#          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        run: |
+          gcloud run deploy gitnewcustomer \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/gitnewcustomer:$GITHUB_SHA \
+            --platform managed \
+            --region us-central1 \
+            --allow-unauthenticated
